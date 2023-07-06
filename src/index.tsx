@@ -5,7 +5,10 @@ import "./index.css";
 import App from "./App";
 import { Homepage } from "./dashbord/homepage/Homepage";
 import Login from "./dashbord/login/Login";
-import MainNavigator from "./controller/MainNavigator";
+import  { Main } from "./controller/MainNavigator";
+import { UserList } from "./dashbord/homepage/UserList";
+import Product from "./dashbord/homepage/Product";
+import SignUp from "./dashbord/signup/Signup";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -13,7 +16,7 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <BrowserRouter>
-      <MainNavigator />
+      <Main />
     </BrowserRouter>
   </React.StrictMode>
 );

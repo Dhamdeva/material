@@ -20,26 +20,36 @@ import * as Yup from "yup";
 import { FormikHelpers, useFormik } from "formik";
 import FormHelperText from "@mui/material/FormHelperText";
 import { useNavigate } from "react-router-dom";
+import { constants } from "../../config/constants";
+import axios from "axios";
+import { Alert } from "@mui/material";
 
-interface SignUpFormValues {
-  email: string;
+interface LogInFormValues {
+  emailId: string;
   password: string;
   allowExtraEmails: boolean;
 }
 
 const defaultTheme = createTheme();
 
-export default function SignUp() {
-  const initialValues: SignUpFormValues = {
-    email: "",
+export default function Login() {
+  console.log("Login");
+
+  const initialValues: LogInFormValues = {
+    emailId: "",
     password: "",
     allowExtraEmails: false,
   };
-
+  const [showSuccessMessage, setShowSuccessMessage] = React.useState(false);
+  const [showErrorMessage, setShowErrorMessage] = React.useState(false);
+  const [successMessage, setSuccessMessage] = React.useState("");
+  const [errorMessage, setErrorMessage] = React.useState("");
   const [showPassword, setShowPassword] = React.useState(false);
   const navigate = useNavigate();
+  const navigates = useNavigate();
 
-  const handleClickShowPassword = () => setShowPassword((show) => !show);
+  const handleClickShowPassword = () =>
+    setShowPassword((show) => !show);
 
   const handleMouseDownPassword = (
     event: React.MouseEvent<HTMLButtonElement>
@@ -47,17 +57,44 @@ export default function SignUp() {
     event.preventDefault();
   };
 
-  const handleSubmit = (
-    values: SignUpFormValues,
-    formikHelpers: FormikHelpers<SignUpFormValues>
+  const handleSubmit = async (
+    values: LogInFormValues,
+    formikHelpers: FormikHelpers<LogInFormValues>
   ) => {
-    console.log(values);
-    formikHelpers.resetForm();
-    navigate("/homepage");
+    try {
+      const res: any = await axios({
+        url: constants.apiBaseUrl + "login",
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json; charset=utf-8",
+        },
+        data: values,
+      });
+
+      if (res.status === 200) {
+        formikHelpers.resetForm();
+        localStorage.setItem('authtoken', res.data.data.token);
+        setTimeout(function () {
+          navigate("/homepage");
+        }, 1000);
+        setShowSuccessMessage(true);
+        setSuccessMessage('Login Sucessfully')
+        setShowErrorMessage(false);
+      } else {
+        setShowSuccessMessage(false);
+        setShowErrorMessage(true);
+        setErrorMessage("Email or Password Incorrect");
+      }
+    } catch (e: any) {
+      setShowSuccessMessage(false);
+      setShowErrorMessage(true);
+      setErrorMessage("Email or Password Incorrect");
+      console.error(e);
+    }
   };
 
   const validationSchema = Yup.object({
-    email: Yup.string()
+    emailId: Yup.string()
       .email("Invalid email address")
       .required("Email is required")
       .matches(
@@ -76,6 +113,16 @@ export default function SignUp() {
   return (
     <ThemeProvider theme={defaultTheme}>
       <Container component="main" maxWidth="xs">
+        {showSuccessMessage && (
+          <Alert severity="success" sx={{ width: "100%" }}>
+            {successMessage}
+          </Alert>
+        )}
+        {showErrorMessage && (
+          <Alert severity="error" sx={{ width: "100%" }}>
+            {errorMessage}
+          </Alert>
+        )}
         <CssBaseline />
         <Box
           sx={{
@@ -97,14 +144,16 @@ export default function SignUp() {
                 <TextField
                   required
                   fullWidth
-                  id="email"
+                  id="emailId"
                   label="Email Address"
-                  name="email"
-                  autoComplete="email"
-                  value={formik.values.email}
+                  name="emailId"
+                  autoComplete="emailId"
+                  value={formik.values.emailId}
                   onChange={formik.handleChange}
-                  error={formik.touched.email && Boolean(formik.errors.email)}
-                  helperText={formik.touched.email && formik.errors.email}
+                  error={
+                    formik.touched.emailId && Boolean(formik.errors.emailId)
+                  }
+                  helperText={formik.touched.emailId && formik.errors.emailId}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -129,7 +178,11 @@ export default function SignUp() {
                           onMouseDown={handleMouseDownPassword}
                           edge="end"
                         >
-                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                          {showPassword ? (
+                            <VisibilityOff />
+                          ) : (
+                            <Visibility />
+                          )}
                         </IconButton>
                       </InputAdornment>
                     ),
@@ -165,7 +218,7 @@ export default function SignUp() {
             <Grid container justifyContent="flex-end">
               <Grid item>
                 <Link href="/signup" variant="body2">
-                  Don't have accout? Sign up
+                  Don't have an account? Sign up
                 </Link>
               </Grid>
             </Grid>

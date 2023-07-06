@@ -1,125 +1,181 @@
-import * as React from "react";
-import Avatar from "@mui/material/Avatar";
-import Button from "@mui/material/Button";
-import CssBaseline from "@mui/material/CssBaseline";
-import TextField from "@mui/material/TextField";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
-import Link from "@mui/material/Link";
-import Grid from "@mui/material/Grid";
-import IconButton from "@mui/material/IconButton";
-import InputAdornment from "@mui/material/InputAdornment";
-import Visibility from "@mui/icons-material/Visibility";
-import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import Box from "@mui/material/Box";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
-import * as Yup from "yup";
-import { FormikHelpers, useFormik } from "formik";
-import FormControl from "@mui/material/FormControl";
-import FormHelperText from "@mui/material/FormHelperText";
-import { useNavigate } from "react-router-dom";
-
+import * as React from 'react'
+import Avatar from '@mui/material/Avatar'
+import Button from '@mui/material/Button'
+import CssBaseline from '@mui/material/CssBaseline'
+import TextField from '@mui/material/TextField'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import Checkbox from '@mui/material/Checkbox'
+import Link from '@mui/material/Link'
+import Grid from '@mui/material/Grid'
+import IconButton from '@mui/material/IconButton'
+import InputAdornment from '@mui/material/InputAdornment'
+import Visibility from '@mui/icons-material/Visibility'
+import VisibilityOff from '@mui/icons-material/VisibilityOff'
+import Box from '@mui/material/Box'
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined'
+import Typography from '@mui/material/Typography'
+import Container from '@mui/material/Container'
+import { createTheme, ThemeProvider } from '@mui/material/styles'
+import * as Yup from 'yup'
+import { FormikHelpers, useFormik } from 'formik'
+import FormHelperText from '@mui/material/FormHelperText'
+import { useNavigate } from 'react-router-dom'
+import axios from 'axios'
+import { constants } from '../../config/constants'
+import { Alert } from '@mui/material'
+import { Navbar } from '../homepage/Navbar'
 interface SignUpFormValues {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-  confirmpassword: string;
-  phonenumber: string;
-  allowExtraEmails: boolean;
+  firstName: string
+  lastName: string
+  emailId: string
+  password: string
+  confirmpassword: string
+  phoneNo: string
+  allowExtraEmails: boolean
+  name: string
 }
 
-const defaultTheme = createTheme();
+const defaultTheme = createTheme()
 
 export default function SignUp() {
-  const history = useNavigate();
+  const history = useNavigate()
 
   const initialValues: SignUpFormValues = {
-    firstName: "",
-    lastName: "",
-    email: "",
-    confirmpassword: "",
-    phonenumber: "",
-    password: "",
+    firstName: '',
+    lastName: '',
+    emailId: '',
+    confirmpassword: '',
+    phoneNo: '',
+    password: '',
     allowExtraEmails: false,
-  };
-  const [showMessage, setShowMessage] = React.useState(false);
-  const [showPassword, setShowPassword] = React.useState(false);
-  const [showPasswords, setShowPasswords] = React.useState(false);
+    name: '',
+  }
+  const [showMessage, setShowMessage] = React.useState(false)
+  const [message, setMessage] = React.useState('')
+  const [showErrorMessage, setShowErrorMessage] = React.useState(false);
+  const [errorMessage, setErrorMessage] = React.useState("");
+  const [showPassword, setShowPassword] = React.useState(false)
+  const [showPasswords, setShowPasswords] = React.useState(false)
+  
 
-  const handleClickShowPassword = () => setShowPassword((show) => !show);
-  const handleClickShowPasswords = () => setShowPasswords((show) => !show);
+  const handleClickShowPassword = () => setShowPassword((show) => !show)
+  const handleClickShowPasswords = () => setShowPasswords((show) => !show)
+
+  
 
   const handleMouseDownPassword = (
-    event: React.MouseEvent<HTMLButtonElement>
+    event: React.MouseEvent<HTMLButtonElement>,
   ) => {
-    event.preventDefault();
-  };
+    event.preventDefault()
+  }
+  
+
+  const postUser = async () => {}
+
   const validationSchema = Yup.object({
-    firstName: Yup.string().required("First Name is required"),
-    lastName: Yup.string().required("Last Name is required"),
-    email: Yup.string()
-      .email("Invalid email address")
-      .required("Email is required"),
-    phonenumber: Yup.string()
-      .required("Phone number is required")
-      .matches(/^\d{10}$/, "Phone number must be exactly 10 digits"),
+    firstName: Yup.string().required('First Name is required'),
+    lastName: Yup.string().required('Last Name is required'),
+    emailId: Yup.string()
+      .email('Invalid email address')
+      .required('Email is required'),
+    phoneNo: Yup.string()
+      .required('Phone number is required')
+      .matches(/^\d{10}$/, 'Phone number must be exactly 10 digits'),
     password: Yup.string()
-      .required("Password is required")
-      .min(8, "Password must be at least 8 characters")
-      .max(16, "Password must be at most 16 characters")
+      .required('Password is required')
+      .min(8, 'Password must be at least 8 characters')
+      .max(16, 'Password must be at most 16 characters')
       .matches(
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
-        "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
+        'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character',
       ),
     confirmpassword: Yup.string()
-      .required("Confirm Password is required")
-      .oneOf([Yup.ref("password")], "Passwords must match"),
-  });
+      .required('Confirm Password is required')
+      .oneOf([Yup.ref('password')], 'Passwords must match'),
+  })
 
-  const handleSubmit = (
+  const handleSubmit = async (
     values: SignUpFormValues,
-    formikHelpers: FormikHelpers<SignUpFormValues>
+    formikHelpers: FormikHelpers<SignUpFormValues>,
   ) => {
-    console.log(values);
-    formikHelpers.resetForm();
-    history("/");
-    setShowMessage(true);
-  };
+    try {
+      values.name = values.firstName + ' ' + values.lastName
+      //       const data= await axios.post("http://localhost:5000/api/x user",values
+      // );
+
+      const res: any = await axios({
+        url: constants.apiBaseUrl + 'user',
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+        },
+        data: values,
+      })
+      if (res.status) {
+        formikHelpers.resetForm()
+        setTimeout(function () {
+          history('/')
+        }, 3000)
+        setShowMessage(true)
+        setMessage('Added Successfully')
+        setShowErrorMessage(false);
+      } else {
+        setShowMessage(false)
+        setShowErrorMessage(true);
+        setErrorMessage(res.message)
+      }
+    } catch (e: any) {
+      setShowMessage(false);
+      setShowErrorMessage(true);
+      setErrorMessage(e.message);
+      console.error(e)
+    }
+    // formikHelpers.resetForm();
+    // setTimeout(function(){
+    //   history("/")
+    // }, 3000);
+  }
 
   const formik = useFormik({
     validationSchema,
     initialValues,
     onSubmit: handleSubmit,
-  });
+  })
 
   return (
     <ThemeProvider theme={defaultTheme}>
       <Container component="main" maxWidth="xs">
+        
         {showMessage && (
-          <Typography variant="body1" color="success">
-            Registration Successful!
-          </Typography>
+          <Alert
+            severity="success"
+            sx={{  width: '100%' }}
+            color="success"
+          >
+           {message}
+          </Alert>
+        )}
+        {showErrorMessage && (
+          <Alert severity="error" sx={{ width: "100%" }}>
+            {errorMessage}
+          </Alert>
         )}
         <CssBaseline />
         <Box
           sx={{
             marginTop: 8,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
           }}
         >
-          <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
+          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
             Sign up
           </Typography>
-          <form onSubmit={formik.handleSubmit} noValidate>
+          <form onSubmit={formik.handleSubmit} noValidate method="post">
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
                 <TextField
@@ -160,33 +216,32 @@ export default function SignUp() {
                 <TextField
                   required
                   fullWidth
-                  id="email"
+                  id="emailId"
                   label="Email Address"
-                  name="email"
-                  autoComplete="email"
-                  value={formik.values.email}
+                  name="emailId"
+                  autoComplete="emailId"
+                  value={formik.values.emailId}
                   onChange={formik.handleChange}
-                  error={formik.touched.email && Boolean(formik.errors.email)}
-                  helperText={formik.touched.email && formik.errors.email}
+                  error={
+                    formik.touched.emailId && Boolean(formik.errors.emailId)
+                  }
+                  helperText={formik.touched.emailId && formik.errors.emailId}
                 />
               </Grid>
               <Grid item xs={12}>
                 <TextField
                   required
                   fullWidth
-                  id="phonenumber"
+                  id="phoneNo"
                   label="Phone Number"
-                  name="phonenumber"
-                  autoComplete="phonenumber"
-                  value={formik.values.phonenumber}
+                  name="phoneNo"
+                  autoComplete="phoneNo"
+                  value={formik.values.phoneNo}
                   onChange={formik.handleChange}
                   error={
-                    formik.touched.phonenumber &&
-                    Boolean(formik.errors.phonenumber)
+                    formik.touched.phoneNo && Boolean(formik.errors.phoneNo)
                   }
-                  helperText={
-                    formik.touched.phonenumber && formik.errors.phonenumber
-                  }
+                  helperText={formik.touched.phoneNo && formik.errors.phoneNo}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -196,7 +251,7 @@ export default function SignUp() {
                   label="Password"
                   name="password"
                   id="password"
-                  type={showPassword ? "text" : "password"}
+                  type={showPassword ? 'text' : 'password'}
                   value={formik.values.password}
                   onChange={formik.handleChange}
                   error={
@@ -228,7 +283,7 @@ export default function SignUp() {
                   label="Confirm Password"
                   name="confirmpassword"
                   id="confirmpassword"
-                  type={showPasswords ? "text" : "password"}
+                  type={showPasswords ? 'text' : 'password'}
                   value={formik.values.confirmpassword}
                   onChange={formik.handleChange}
                   error={
@@ -279,7 +334,7 @@ export default function SignUp() {
             </Button>
             <Grid container justifyContent="flex-end">
               <Grid item>
-                <Link href="/login" variant="body2">
+                <Link href="/" variant="body2">
                   Already have an account? Sign in
                 </Link>
               </Grid>
@@ -288,5 +343,5 @@ export default function SignUp() {
         </Box>
       </Container>
     </ThemeProvider>
-  );
+  )
 }
