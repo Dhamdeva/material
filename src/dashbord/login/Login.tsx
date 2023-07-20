@@ -32,7 +32,9 @@ interface LogInFormValues {
 
 const defaultTheme = createTheme();
 
-export default function Login() {
+export const Login= () => {
+
+  
   console.log("Login");
 
   const initialValues: LogInFormValues = {
@@ -111,7 +113,7 @@ export default function Login() {
   });
 
   return (
-    <ThemeProvider theme={defaultTheme}>
+    <ThemeProvider theme={defaultTheme} >
       <Container component="main" maxWidth="xs">
         {showSuccessMessage && (
           <Alert severity="success" sx={{ width: "100%" }}>

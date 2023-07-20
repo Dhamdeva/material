@@ -100,9 +100,6 @@ export default function SignUp() {
   ) => {
     try {
       values.name = values.firstName + ' ' + values.lastName
-      //       const data= await axios.post("http://localhost:5000/api/x user",values
-      // );
-
       const res: any = await axios({
         url: constants.apiBaseUrl + 'user',
         method: 'POST',

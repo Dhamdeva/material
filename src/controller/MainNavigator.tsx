@@ -2,10 +2,11 @@ import React, { useEffect } from "react";
 import { Routes, Route, useNavigate } from "react-router-dom";
 import { Homepage } from "../dashbord/homepage/Homepage";
 import SignUp from "../dashbord/signup/Signup";
-import Login from "../dashbord/login/Login";
+import {Login} from "../dashbord/login/Login";
 import { UserList } from "../dashbord/homepage/UserList";
 import Product from "../dashbord/homepage/Product";
-import { Home } from "../dashbord/homepage/Home";
+import { ProductList } from "../dashbord/homepage/ProductList";
+import ProductDesign from "../dashbord/homepage/ProductDesign";
 
 function MainNavigator() {
   const navigate=useNavigate();
@@ -24,26 +25,17 @@ function MainNavigator() {
   return (
     <div className="App">
       <Routes>
-        <Route path="/home" element={<Home />} />
+
+        <Route path="/" element={<Login />} />  
+        <Route path="/signup"  element={<SignUp  />} />
+        <Route path="/homepage" element={<Homepage />} />
         <Route path="/userlist" element={<UserList />} />
         <Route path="/product" element={<Product />} />
+        <Route path="/productlist" element={<ProductList />} />
+        <Route path="/productdesign" element={<ProductDesign />} />
       </Routes>
     </div>
   );
 }
 
 export default MainNavigator;
-
-export  function   Main(){
-  return(
-    <div>
-      <Routes>
-        <Route path="/" element={<Login />} />  
-        <Route path="/signup" element={<SignUp />} />
-        <Route path="/homepage" element={<Homepage />} />
-        <Route path="/userlist" element={<UserList />} />
-        <Route path="/product" element={<Product />} />
-      </Routes>
-    </div>
-  )
-}
